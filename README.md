@@ -54,13 +54,13 @@ The app follows a simple triad:
 ```mermaid
 flowchart TD
   U[User] -->|click nav / buttons| R[Router]
-  R -->|create element| Main[<main> container]
+  R -->|create element| Main["<main> container"]
   Main -->|append| Page[menu-page | order-page | details-page]
 
-  subgraph Data & State
+  subgraph "Data & State"
     API[services/API.fetchMenu]
     Store[(app.store)]
-    Events>"appmenuchange / appcartchange"]
+    Events["appmenuchange / appcartchange"]
   end
 
   Page --> Store
@@ -72,7 +72,8 @@ flowchart TD
   Store -- dispatch --> Badge[Header badge update]
 
   Details[details-page] -->|load by id| MenuSvc[services/Menu.getProductById]
-  MenuSvc -->|may fetch| API --> Store
+  MenuSvc -->|may fetch| API
+  API --> Store
 ```
 
 ### Routing
@@ -85,10 +86,13 @@ Router listens to `popstate` and uses `history.pushState` for navigation. It rem
 
 ```mermaid
 stateDiagram-v2
-  [*] --> "/"
-  "/" --> "/product-{id}"
-  "/product-{id}" --> "/order"
-  "/order" --> "/"
+  state " / " as Home
+  state " /product-{id} " as Product
+  state " /order " as Order
+  [*] --> Home
+  Home --> Product
+  Product --> Order
+  Order --> Home
 ```
 
 ### Data flow: Add to cart
@@ -96,10 +100,10 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
   participant U as User
-  participant PI as components/ProductItem
-  participant Order as services/Order
-  participant Store as app.store (Proxy)
-  participant OP as components/OrderPage
+  participant PI as "components/ProductItem"
+  participant Order as "services/Order"
+  participant Store as "app.store (Proxy)"
+  participant OP as "components/OrderPage"
 
   U->>PI: Click Add
   PI->>Order: addToCart(productId)

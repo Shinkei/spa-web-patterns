@@ -1,0 +1,45 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build artifacts
+dist/
+build/
+out/
+.tmp/
+.temp/
+.cache/
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.swn
+*.swm
+*.log
+.history/
+.idea/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# VS Code (keep common project files, ignore the rest)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# PWA / Service worker build artifacts (if introduced later)
+workbox-*.js
+sw.*.map

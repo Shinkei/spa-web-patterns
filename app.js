@@ -6,9 +6,9 @@ import API from './services/API.js';
 import MenuPage from './components/MenuPage.js';
 import OrderPage from './components/OrderPage.js';
 import DetailsPage from './components/DetailsPage.js';
-import { loadData } from "./services/Menu.js";
+import { loadData } from './services/Menu.js';
 
-window.app = {}
+window.app = {};
 
 const $ = () => document.querySelector.call(this, arguments);
 const $$ = () => document.querySelectorAll.call(this, arguments);
@@ -20,18 +20,16 @@ HTMLElement.prototype.$ = () => this.querySelectorAll.call(this, arguments);
 app.router = Router;
 app.store = Store;
 
-window.addEventListener("DOMContentLoaded", () => {
-    app.router.init();
-    loadData();
+window.addEventListener('DOMContentLoaded', () => {
+  app.router.init();
+  loadData();
 });
 
+navigator.serviceWorker.register('/serviceworker.js');
 
-navigator.serviceWorker.register("/serviceworker.js");
-
-
-window.addEventListener("appcartchange", event => {
-    const badge = document.getElementById("badge");
-    const qty = app.store.cart.reduce((acc, item) => acc + item.quantity, 0);
-    badge.textContent = qty;
-    badge.hidden = qty == 0;
+window.addEventListener('appcartchange', (event) => {
+  const badge = document.getElementById('badge');
+  const qty = app.store.cart.reduce((acc, item) => acc + item.quantity, 0);
+  badge.textContent = qty;
+  badge.hidden = qty == 0;
 });

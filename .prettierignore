@@ -1,0 +1,25 @@
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.next/
+out/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# images and other binaries
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.svg
+**/*.webp
+**/*.ico
+**/*.gif

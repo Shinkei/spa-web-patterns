@@ -54,8 +54,8 @@ The app follows a simple triad:
 ```mermaid
 flowchart TD
   U[User] -->|click nav / buttons| R[Router]
-  R -->|create element| Main["<main> container"]
-  Main -->|append| Page[menu-page | order-page | details-page]
+  R -->|create element| Main["&lt;main&gt; container"]
+  Main -->|append| Page["menu-page<br/>order-page<br/>details-page"]
 
   subgraph "Data & State"
     API[services/API.fetchMenu]

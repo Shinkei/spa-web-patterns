@@ -63,6 +63,13 @@ flowchart TD
     Events["appmenuchange / appcartchange"]
   end
 
+  subgraph "Lazy Loading"
+    R -->|"/order route"| LO["🔄 import('../components/OrderPage.js')"]
+    R -->|"/product-* route"| LD["🔄 import('../components/DetailsPage.js')"]
+    LO -.->|loaded once, cached| Page
+    LD -.->|loaded once, cached| Page
+  end
+
   Page --> Store
   Store -- dispatch --> Events
   Events --> Page
@@ -105,15 +112,64 @@ case '/order':
 - Modules are cached after first load
 - Users only download code for features they use
 
+#### Lazy Loading Flow
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant R as Router
+  participant B as Browser
+  participant C as Component Cache
+  participant M as Main Container
+
+  Note over U,M: Initial app load - only MenuPage loaded
+  U->>R: Navigate to "/"
+  R->>M: Create menu-page (already loaded)
+  
+  Note over U,M: First visit to /order - triggers lazy load
+  U->>R: Navigate to "/order"
+  R->>B: import('../components/OrderPage.js')
+  B-->>R: Module loaded & parsed
+  R->>C: Cache OrderPage module
+  R->>M: Create order-page element
+  
+  Note over U,M: Subsequent visits - use cached module
+  U->>R: Navigate to "/order" again
+  R->>C: Use cached OrderPage
+  R->>M: Create order-page element (fast!)
+```
+
 ```mermaid
 stateDiagram-v2
-  state " / " as Home
-  state " /product-{id} " as Product
-  state " /order " as Order
-  [*] --> Home
-  Home --> Product
-  Product --> Order
-  Order --> Home
+  state "App Start" as Start
+  state "/ (MenuPage)" as Home
+  state "Loading OrderPage..." as LoadingOrder
+  state "/order (OrderPage)" as Order
+  state "Loading DetailsPage..." as LoadingDetails  
+  state "/product-{id} (DetailsPage)" as Product
+  
+  [*] --> Start
+  Start --> Home : MenuPage pre-loaded
+  
+  Home --> LoadingOrder : Navigate to /order
+  LoadingOrder --> Order : import() complete
+  
+  Home --> LoadingDetails : Navigate to /product-*
+  LoadingDetails --> Product : import() complete
+  
+  Order --> Home : Navigate back
+  Product --> Order : Add to cart
+  Product --> Home : Navigate back
+  
+  note right of LoadingOrder
+    🔄 Dynamic import
+    await import('../components/OrderPage.js')
+  end note
+  
+  note right of LoadingDetails
+    🔄 Dynamic import  
+    await import('../components/DetailsPage.js')
+  end note
 ```
 
 ### Data flow: Add to cart

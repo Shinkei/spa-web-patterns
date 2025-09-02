@@ -4,13 +4,15 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "serve": "serve -s . -l 8000"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "serve": "^14.2.4"
   }
 }

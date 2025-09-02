@@ -4,8 +4,6 @@ import API from './services/API.js';
 
 // Web Components Imports
 import MenuPage from './components/MenuPage.js';
-import OrderPage from './components/OrderPage.js';
-import DetailsPage from './components/DetailsPage.js';
 import { loadData } from './services/Menu.js';
 
 window.app = {};

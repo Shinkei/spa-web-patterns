@@ -84,6 +84,27 @@ flowchart TD
 
 Router listens to `popstate` and uses `history.pushState` for navigation. It removes the current page element and appends the new one into `<main>`.
 
+#### Lazy Loading Pattern
+
+The router implements lazy loading for better performance:
+
+- **MenuPage** is loaded eagerly (imported at app startup)
+- **OrderPage** and **DetailsPage** use dynamic imports and are loaded only when needed
+
+```javascript
+// Lazy loading example from Router.js
+case '/order':
+  await import('../components/OrderPage.js');
+  pageElement = document.createElement('order-page');
+  break;
+```
+
+**Benefits:**
+- Reduces initial bundle size
+- Improves page load performance
+- Modules are cached after first load
+- Users only download code for features they use
+
 ```mermaid
 stateDiagram-v2
   state " / " as Home

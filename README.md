@@ -112,6 +112,27 @@ case '/order':
 - Modules are cached after first load
 - Users only download code for features they use
 
+#### View Transitions Pattern
+
+The router uses the modern View Transitions API for smooth page changes:
+
+```javascript
+// View transitions with progressive enhancement
+if (document.startViewTransition) {
+  document.startViewTransition(() => {
+    changePage();
+  });
+} else {
+  changePage(); // Fallback for unsupported browsers
+}
+```
+
+**Benefits:**
+- Native-like smooth transitions between pages
+- Progressive enhancement (works in all browsers)
+- Improved perceived performance
+- Enhanced user experience
+
 #### Lazy Loading Flow
 
 ```mermaid

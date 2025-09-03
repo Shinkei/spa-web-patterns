@@ -1,13 +1,22 @@
 /**
- * Client-side Router with Lazy Loading Pattern
+ * Client-side Router with Lazy Loading and View Transitions Patterns
  *
- * This router implements lazy loading to improve performance:
+ * This router implements multiple modern web patterns:
+ * 
+ * LAZY LOADING PATTERN:
  * - MenuPage: Loaded eagerly (at app startup)
  * - OrderPage & DetailsPage: Loaded on-demand using dynamic imports
+ * 
+ * VIEW TRANSITIONS PATTERN:
+ * - Uses View Transitions API for smooth page changes
+ * - Progressive enhancement with graceful fallback
+ * - Native-like animations between routes
  *
  * Benefits:
  * - Smaller initial bundle size
  * - Faster initial page load
+ * - Smooth, animated transitions
+ * - Enhanced user experience
  * - Code splitting for better caching
  * - Only load what users actually need
  */
@@ -55,13 +64,26 @@ const Router = {
         break;
     }
     if (pageElement) {
-      // get current page element
-      let currentPage = document.querySelector('main').firstElementChild;
-      if (currentPage) {
-        currentPage.remove();
-        document.querySelector('main').appendChild(pageElement);
+      function changePage() {
+        // get current page element
+        let currentPage = document.querySelector('main').firstElementChild;
+        if (currentPage) {
+          currentPage.remove();
+          document.querySelector('main').appendChild(pageElement);
+        } else {
+          document.querySelector('main').appendChild(pageElement);
+        }
+      }
+      
+      // VIEW TRANSITIONS PATTERN: Progressive enhancement for smooth page transitions
+      // Uses the modern View Transitions API when available, falls back gracefully
+      // Provides native-like animations between page changes in SPAs
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          changePage();
+        });
       } else {
-        document.querySelector('main').appendChild(pageElement);
+        changePage();
       }
     }
 

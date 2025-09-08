@@ -65,6 +65,13 @@ flowchart TD
     Events["appmenuchange / appcartchange"]
   end
 
+  subgraph "Template Rendering"
+    Templates["HTML &lt;template&gt; elements"]
+    Interpolate["utils/interpolate.js"]
+    Templates --> Interpolate
+    Interpolate --> Page
+  end
+
   subgraph "Lazy Loading"
     R -->|"/order route"| LO["🔄 import('../components/OrderPage.js')"]
     R -->|"/product-* route"| LD["🔄 import('../components/DetailsPage.js')"]
@@ -83,6 +90,8 @@ flowchart TD
   Details[details-page] -->|load by id| MenuSvc[services/Menu.getProductById]
   MenuSvc -->|may fetch| API
   API --> Store
+  
+  Store -.-> Templates
 ```
 
 ### Routing
@@ -223,6 +232,172 @@ sequenceDiagram
 - `details-page` — fetches product by id, renders info, and adds to cart; then routes to `/order`.
 - `order-page` — displays cart items via `<cart-item>`, calculates totals, and shows a simple checkout form.
 - `cart-item` — renders item quantity, name, price, and a delete action via `removeFromCart`.
+
+## Template Interpolation Pattern
+
+This project demonstrates a custom template interpolation pattern that shows how template engines work under the hood. It's implemented for educational purposes to understand dynamic string templating using JavaScript's meta-programming capabilities.
+
+### How it works
+
+The interpolation function uses JavaScript's `Function` constructor to dynamically create template literal functions:
+
+```javascript
+// utils/interpolate.js
+export function interpolate(str, params) {
+  const names = Object.keys(params);
+  const values = Object.values(params);
+  
+  return new Function(...names, `return \`${str}\`;`)(...values);
+}
+```
+
+### What happens under the hood
+
+When you call `interpolate('Hello ${name}!', { name: 'World' })`, it:
+
+1. **Extracts parameter names**: `['name']`
+2. **Extracts parameter values**: `['World']`
+3. **Creates a dynamic function**: `new Function('name', 'return `Hello ${name}!`;')`
+4. **Executes the function**: `fn('World')` → `'Hello World!'`
+
+This is essentially **metaprogramming** — code that writes and executes code!
+
+### Usage in components
+
+Components use HTML `<template>` elements with `${variable}` placeholders:
+
+```html
+<!-- In index.html -->
+<template id="cart-item-template">
+  <li>
+    <p class="qty">${qty}</p>
+    <p class="name">${name}</p>
+    <p class="price">${price}</p>
+    <p class="toolbar">
+      <a href="#" class="delete-button">🗑️</a>
+    </p>
+  </li>
+</template>
+```
+
+```javascript
+// In components/CartItem.js
+import { interpolate } from '../utils/interpolate.js';
+
+connectedCallback() {
+  const item = JSON.parse(this.dataset.item);
+  const template = document.getElementById('cart-item-template');
+  
+  this.innerHTML = interpolate(template.innerHTML, {
+    qty: `${item.quantity}x`,
+    name: item.product.name,
+    price: `$${item.product.price.toFixed(2)}`,
+  });
+}
+```
+
+### Template Interpolation Flow
+
+```mermaid
+sequenceDiagram
+  participant C as Component
+  participant T as Template Element
+  participant I as interpolate()
+  participant F as Function Constructor
+  participant DOM as DOM
+
+  Note over C,DOM: Template Interpolation Process
+  C->>T: getElementById('template-id')
+  T-->>C: Return template.innerHTML
+  
+  C->>I: interpolate(templateHTML, data)
+  Note over I: Extract keys/values from data
+  I->>F: new Function(...names, `return \`${str}\`;`)
+  F-->>I: Generated template function
+  I->>F: Execute function(...values)
+  F-->>I: Interpolated HTML string
+  I-->>C: Return final HTML
+  
+  C->>DOM: Set innerHTML
+  Note over DOM: Component rendered with data
+```
+
+```mermaid
+flowchart TD
+  subgraph "Template Interpolation Pattern"
+    Data["{qty: '2x', name: 'Coffee', price: '$4.50'}"]
+    Template["Template: '&lt;p&gt;${qty} ${name} - ${price}&lt;/p&gt;'"]
+    
+    Data --> Extract["Extract keys: ['qty', 'name', 'price']<br/>Extract values: ['2x', 'Coffee', '$4.50']"]
+    Template --> Extract
+    
+    Extract --> Generate["new Function('qty', 'name', 'price',<br/>'return `&lt;p&gt;${qty} ${name} - ${price}&lt;/p&gt;`;')"]
+    
+    Generate --> Execute["Execute: fn('2x', 'Coffee', '$4.50')"]
+    
+    Execute --> Result["Result: '&lt;p&gt;2x Coffee - $4.50&lt;/p&gt;'"]
+    
+    Result --> Render["component.innerHTML = result"]
+  end
+  
+  style Data fill:#e1f5fe
+  style Template fill:#f3e5f5
+  style Result fill:#e8f5e8
+  style Generate fill:#fff3e0
+```
+
+### Educational benefits
+
+This pattern demonstrates several important JavaScript concepts:
+
+- **Template literals**: Understanding how `${expression}` works
+- **Function constructor**: Dynamic function creation at runtime
+- **Destructuring**: Using `Object.keys()` and `Object.values()`
+- **Spread operator**: `...names` and `...values` usage
+- **Metaprogramming**: Code that generates and executes code
+- **Separation of concerns**: HTML structure separated from JavaScript logic
+
+### Comparison with frameworks
+
+This is similar to how template engines in frameworks work:
+
+| Pattern | Example | Our Implementation |
+|---------|---------|-------------------|
+| Vue.js | `{{ name }}` | `${name}` |
+| Angular | `{{ name }}` | `${name}` |
+| Handlebars | `{{name}}` | `${name}` |
+| Our Pattern | `${name}` | Uses template literals directly |
+
+### Security considerations
+
+⚠️ **Important**: This pattern uses `new Function()` which can execute arbitrary code. In production applications:
+
+- Always sanitize template strings
+- Never use user-provided templates
+- Consider using safer alternatives like simple string replacement
+- This implementation is for educational purposes only
+
+### Alternative approaches
+
+For production code, consider these safer alternatives:
+
+```javascript
+// Simple string replacement (safer)
+function simpleReplace(str, params) {
+  return str.replace(/\${(\w+)}/g, (match, key) => params[key] || match);
+}
+
+// DOM-based approach (safest)
+function domBased(templateId, data) {
+  const template = document.getElementById(templateId);
+  const clone = template.content.cloneNode(true);
+  
+  clone.querySelector('.name').textContent = data.name;
+  clone.querySelector('.price').textContent = data.price;
+  
+  return clone;
+}
+```
 
 ## Store and events
 

@@ -2,11 +2,11 @@
  * Client-side Router with Lazy Loading and View Transitions Patterns
  *
  * This router implements multiple modern web patterns:
- * 
+ *
  * LAZY LOADING PATTERN:
  * - MenuPage: Loaded eagerly (at app startup)
  * - OrderPage & DetailsPage: Loaded on-demand using dynamic imports
- * 
+ *
  * VIEW TRANSITIONS PATTERN:
  * - Uses View Transitions API for smooth page changes
  * - Progressive enhancement with graceful fallback
@@ -74,7 +74,7 @@ const Router = {
           document.querySelector('main').appendChild(pageElement);
         }
       }
-      
+
       // VIEW TRANSITIONS PATTERN: Progressive enhancement for smooth page transitions
       // Uses the modern View Transitions API when available, falls back gracefully
       // Provides native-like animations between page changes in SPAs

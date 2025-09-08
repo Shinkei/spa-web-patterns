@@ -25,6 +25,7 @@ export default class DetailsPage extends HTMLElement {
       this.product = await getProductById(this.dataset.productId);
       this.root.querySelector('h2').textContent = this.product.name;
       this.root.querySelector('img').src = `/data/images/${this.product.image}`;
+      this.root.querySelector('img').style.viewTransitionName = `product-${this.product.id}`;
       this.root.querySelector('.description').textContent = this.product.description;
       this.root.querySelector('.price').textContent = `$ ${this.product.price.toFixed(2)} ea`;
       this.root.querySelector('button').addEventListener('click', () => {

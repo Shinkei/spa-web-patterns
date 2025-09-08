@@ -1,4 +1,4 @@
-# Coffee  SPA — Web Patterns Playground
+# Coffee SPA — Web Patterns Playground
 
 A small Single Page Application to explore and practice common web patterns typically used in SPA apps: client-side routing, custom elements (Web Components), shared state via a proxy store with change events, simple data fetching, and a PWA-ready shell.
 
@@ -20,6 +20,7 @@ Because the app uses ES modules and fetches assets with absolute paths (e.g. `/d
   ```
 
 Notes
+
 - Keep the project at the server root so absolute URLs like `/data/menu.json` and `/components/*.css` resolve correctly.
 - A service worker is registered but currently empty; caching strategies are a future enhancement.
 
@@ -45,6 +46,7 @@ Notes
 ## Architecture overview
 
 The app follows a simple triad:
+
 - Router swaps the active page element into `<main>` based on `location.pathname`
 - Store is a single source of truth (`app.store`) backed by a Proxy that emits change events
 - Components render from Store and react to events to keep UI in sync
@@ -107,6 +109,7 @@ case '/order':
 ```
 
 **Benefits:**
+
 - Reduces initial bundle size
 - Improves page load performance
 - Modules are cached after first load
@@ -128,6 +131,7 @@ if (document.startViewTransition) {
 ```
 
 **Benefits:**
+
 - Native-like smooth transitions between pages
 - Progressive enhancement (works in all browsers)
 - Improved perceived performance
@@ -146,14 +150,14 @@ sequenceDiagram
   Note over U,M: Initial app load - only MenuPage loaded
   U->>R: Navigate to "/"
   R->>M: Create menu-page (already loaded)
-  
+
   Note over U,M: First visit to /order - triggers lazy load
   U->>R: Navigate to "/order"
   R->>B: import('../components/OrderPage.js')
   B-->>R: Module loaded & parsed
   R->>C: Cache OrderPage module
   R->>M: Create order-page element
-  
+
   Note over U,M: Subsequent visits - use cached module
   U->>R: Navigate to "/order" again
   R->>C: Use cached OrderPage
@@ -166,29 +170,29 @@ stateDiagram-v2
   state "/ (MenuPage)" as Home
   state "Loading OrderPage..." as LoadingOrder
   state "/order (OrderPage)" as Order
-  state "Loading DetailsPage..." as LoadingDetails  
+  state "Loading DetailsPage..." as LoadingDetails
   state "/product-{id} (DetailsPage)" as Product
-  
+
   [*] --> Start
   Start --> Home : MenuPage pre-loaded
-  
+
   Home --> LoadingOrder : Navigate to /order
   LoadingOrder --> Order : import() complete
-  
+
   Home --> LoadingDetails : Navigate to /product-*
   LoadingDetails --> Product : import() complete
-  
+
   Order --> Home : Navigate back
   Product --> Order : Add to cart
   Product --> Home : Navigate back
-  
+
   note right of LoadingOrder
     🔄 Dynamic import
     await import('../components/OrderPage.js')
   end note
-  
+
   note right of LoadingDetails
-    🔄 Dynamic import  
+    🔄 Dynamic import
     await import('../components/DetailsPage.js')
   end note
 ```

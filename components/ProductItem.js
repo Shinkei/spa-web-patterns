@@ -17,6 +17,7 @@ export default class ProductItem extends HTMLElement {
     this.querySelector('h4').textContent = product.name;
     this.querySelector('p.price').textContent = `$${product.price.toFixed(2)}`;
     this.querySelector('img').src = `data/images/${product.image}`;
+    this.querySelector('img').style.viewTransitionName = `product-${product.id}`;
     this.querySelector('a').addEventListener('click', (event) => {
       console.log(event.target.tagName);
       if (event.target.tagName.toLowerCase() == 'button') {

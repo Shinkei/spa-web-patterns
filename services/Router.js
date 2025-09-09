@@ -36,6 +36,10 @@ const Router = {
     // Process initial URL
     Router.go(location.pathname);
   },
+  setMetadata: (title, color) => {
+    document.title = `${title} - Coffee Shop`;
+    document.querySelector('meta[name="theme-color"]').content = color;
+  },
   go: async (route, addToHistory = true) => {
     if (addToHistory) {
       history.pushState({ route }, '', route);
@@ -45,6 +49,7 @@ const Router = {
       case '/':
         // MenuPage is loaded eagerly (imported at app startup)
         pageElement = document.createElement('menu-page');
+        Router.setMetadata('Menu', '#fff');
         break;
       case '/order':
         // LAZY LOADING PATTERN: Dynamic import loads the module only when needed
@@ -52,11 +57,13 @@ const Router = {
         // The module is loaded asynchronously and cached for subsequent visits
         await import('../components/OrderPage.js');
         pageElement = document.createElement('order-page');
+        Router.setMetadata('Your Order', '#f60');
         break;
       default:
         if (route.startsWith('/product-')) {
           // LAZY LOADING PATTERN: DetailsPage is also loaded on-demand
           // Only imported when a product detail route is accessed
+          Router.setMetadata('Product Details', '#f0f');
           await import('../components/DetailsPage.js');
           pageElement = document.createElement('details-page');
           pageElement.dataset.productId = route.substring(route.lastIndexOf('-') + 1);

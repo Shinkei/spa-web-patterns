@@ -312,7 +312,7 @@ sequenceDiagram
   
   C->>I: interpolate(templateHTML, data)
   Note over I: Extract keys/values from data
-  I->>F: new Function(...names, `return \`${str}\`;`)
+  I->>F: new Function(...names, template)
   F-->>I: Generated template function
   I->>F: Execute function(...values)
   F-->>I: Interpolated HTML string
@@ -326,12 +326,12 @@ sequenceDiagram
 flowchart TD
   subgraph "Template Interpolation Pattern"
     Data["{qty: '2x', name: 'Coffee', price: '$4.50'}"]
-    Template["Template: '&lt;p&gt;${qty} ${name} - ${price}&lt;/p&gt;'"]
+    Template["Template: '&lt;p&gt;$${qty} $${name} - $${price}&lt;/p&gt;'"]
     
     Data --> Extract["Extract keys: ['qty', 'name', 'price']<br/>Extract values: ['2x', 'Coffee', '$4.50']"]
     Template --> Extract
     
-    Extract --> Generate["new Function('qty', 'name', 'price',<br/>'return `&lt;p&gt;${qty} ${name} - ${price}&lt;/p&gt;`;')"]
+    Extract --> Generate["new Function('qty', 'name', 'price',<br/>'return template literal string')"]
     
     Generate --> Execute["Execute: fn('2x', 'Coffee', '$4.50')"]
     

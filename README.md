@@ -325,17 +325,17 @@ sequenceDiagram
 ```mermaid
 flowchart TD
   subgraph "Template Interpolation Pattern"
-    Data["{qty: '2x', name: 'Coffee', price: '$4.50'}"]
-    Template["Template: '&lt;p&gt;$${qty} $${name} - $${price}&lt;/p&gt;'"]
+    Data["{qty: '2x', name: 'Coffee', price: '4.50'}"]
+    Template["Template: '&lt;p&gt;DOLLAR{qty} DOLLAR{name} - DOLLAR{price}&lt;/p&gt;'"]
     
-    Data --> Extract["Extract keys: ['qty', 'name', 'price']<br/>Extract values: ['2x', 'Coffee', '$4.50']"]
+    Data --> Extract["Extract keys: ['qty', 'name', 'price']<br/>Extract values: ['2x', 'Coffee', '4.50']"]
     Template --> Extract
     
     Extract --> Generate["new Function('qty', 'name', 'price',<br/>'return template literal string')"]
     
-    Generate --> Execute["Execute: fn('2x', 'Coffee', '$4.50')"]
+    Generate --> Execute["Execute: fn('2x', 'Coffee', '4.50')"]
     
-    Execute --> Result["Result: '&lt;p&gt;2x Coffee - $4.50&lt;/p&gt;'"]
+    Execute --> Result["Result: '&lt;p&gt;2x Coffee - 4.50&lt;/p&gt;'"]
     
     Result --> Render["component.innerHTML = result"]
   end
